@@ -16,6 +16,7 @@ class Detector(object):
     def __init__(self, data: DataFrame, name_Y: str):
         self.data = data
         self.name_Y = name_Y
+        self.name_factors = 0
         return
 
     def detectorname(self):
@@ -24,9 +25,10 @@ class Detector(object):
     def train(self):
         # to train the model
         # first to check to parameer
-        x, y = checkparameter(self.data, self.name_Y)
-
+        x, y, name_factors = checkparameter(self.data, self.name_Y)
+        self.name_factors = name_factors
         return x, y
+
     def putout(self):
         pass
 
