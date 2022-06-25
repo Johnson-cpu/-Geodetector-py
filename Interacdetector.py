@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
+# @Time : 2022/6/25
+# @Author : fanze
+# @Email : 184286692@qq.com
+# @File : Interacdetector
+# -*- coding: utf-8 -*-
 # @Time : 2022/5/17
 # @Author : fanze
 # @Email : 184286692@qq.com
 # @File : difacdetector
-from detector import Detector
+
+from difacdetector import DifferentiationFactorDetector
 from collections import Counter
 import numpy as np
 from scipy.stats import ncf
 
-class DifferentiationFactorDetector(Detector):
-    NAME = 'DifferentiationFactorDetector'
+class InteractionDetector(DifferentiationFactorDetector):
+    # InteractionDetector kind of like DifferentiationFactorDetector， so we make it inherit DifferentiationFactorDetector
+    NAME = 'InteractionDetector'
 
     def __init__(self, data, name_Y):
         super().__init__(self, data, name_Y)
@@ -17,6 +24,8 @@ class DifferentiationFactorDetector(Detector):
     def train(self):
         # Calls error checking for the parent class and returns x and y
         x, y, name_factors = super().train()
+        # Regenerate X and name_factors
+        x, name_factors = Interactiontransform(x, name_factors)
         # train the Anomaly and factor detection models . res is list of q value and F value
         list_q, list_F = mdoel(x, y)
         self.q = list_q
@@ -25,11 +34,40 @@ class DifferentiationFactorDetector(Detector):
 
         return
 
-
     def putout(self):
         # Output an ndrray, q value and F value
 
         pass
+
+def Interactiontransform(x, name_factors):
+    """
+    :param x:
+    :param y:
+    :return: changedx, name_factors
+    """
+    # Regenerate X  N columns x have 1+... + n - 1 column
+
+    # Compute the number of columns of changedx,
+    numbercolumnschangedx = (x.shape[1]*(x.shape[1]-1))/2
+
+    changedname_factors = []
+    changedx = []
+    #np.zeros((x.shape[0], numbercolumnschangedx))
+    # Start Regenerate
+    for i in range(x.shape[1]):
+        for j in range(i+1, x.shape[1]):
+            changedname_factors.append(name_factors[i]+'AND' + name_factors[j])
+            count1 = set(x[ : i])
+            count2 = set(x[ : j])
+            for m, n in zip(x[ : i], x[ : j]):
+                for k in range(len(count1)):
+                    for l in range(len(count2)):
+                        if m == count1[k] and n == count2[l]:
+                            changedx.append[(k)*len(count2) + l]
+
+    changedx = np.array(changedx).reshape((x.shape[0], numbercolumnschangedx))
+    changedx = np.transpose(changedx)
+    return changedx , changedname_factors
 
 def mdoel(x, y):
     """
