@@ -9,13 +9,13 @@
 # @Email : 184286692@qq.com
 # @File : difacdetector
 
-from difacdetector import DifferentiationFactorDetector
+from detector import Detector
 from collections import Counter
 import numpy as np
 from scipy.stats import ncf
 
-class InteractionDetector(DifferentiationFactorDetector):
-    # InteractionDetector kind of like DifferentiationFactorDetector， so we make it inherit DifferentiationFactorDetector
+class InteractionDetector(Detector):
+    ## InteractionDetector kind of like DifferentiationFactorDetector， so we make it inherit DifferentiationFactorDetector
     NAME = 'InteractionDetector'
 
     def __init__(self, data, name_Y):
@@ -25,13 +25,16 @@ class InteractionDetector(DifferentiationFactorDetector):
         # Calls error checking for the parent class and returns x and y
         x, y, name_factors = super().train()
         # Regenerate X and name_factors
-        x, name_factors = Interactiontransform(x, name_factors)
+        changedx, changedname_factors = Interactiontransform(x, name_factors)
         # train the Anomaly and factor detection models . res is list of q value and F value
-        list_q, list_F = mdoel(x, y)
-        self.q = list_q
-        resqdict = dict(zip(name_factors, list_q))
-        resFdict = dict(zip(name_factors, list_F))
+        changedlist_q, changedlist_F = mdoel(x, y)
+        resqdict = dict(zip(name_factors, changedlist_q))
+        resFdict = dict(zip(name_factors, changedlist_F))
 
+        # train the  changedx, changedname_factors. res is list of q value and F value
+        list_q, list_F = mdoel(x, y)
+        changedresqdict = dict(zip(changedname_factors, list_q))
+        changedresFdict = dict(zip(changedname_factors, list_F))
         return
 
     def putout(self):

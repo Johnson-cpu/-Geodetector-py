@@ -19,7 +19,6 @@ class DifferentiationFactorDetector(Detector):
         x, y, name_factors = super().train()
         # train the Anomaly and factor detection models . res is list of q value and F value
         list_q, list_F = mdoel(x, y)
-        self.q = list_q
         resqdict = dict(zip(name_factors, list_q))
         resFdict = dict(zip(name_factors, list_F))
 
